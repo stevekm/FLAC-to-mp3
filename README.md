@@ -20,7 +20,8 @@ brew update && brew upgrade ffmpeg
 
 Make sure you have your archive passwords entered into the file `passwords.txt`; you can just rename the included `sample-passwords.txt` file here and place your passwords in it. 
 
-Then, run the script on a directory that contains password-protected archive files (.7z, .rar, .zip) and/or FLAC files. 
+# Usage
+Run the script on a directory that contains password-protected archive files (.7z, .rar, .zip) and/or FLAC files. 
 
 ```bash
 ./extract_flac2mp3.sh "path/to/my_music"
