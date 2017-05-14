@@ -10,6 +10,47 @@
 ## $ brew update && brew upgrade ffmpeg
 ## $ brew install p7zip
 
+# ~~~~~ SETTINGS ~~~~~ #
+# file with passwords to try, one per line
+password_file="passwords.txt"
+divder="---------------------------------"
+
+
+# ~~~~~ CUSTOM FUNCTIONS ~~~~~ #
+find_archives () {
+    local input_dir="$1"
+    local password_file="$2"
+    printf "\n%s\nSearching for archive files in directory:\n%s\n\n" "$divder" "$input_dir"
+    find "$input_dir" \( -name '*.zip' -o -name '*.rar' -o -name '*.7z' \) | while read item; do
+        cat "$password_file" | while read password; do
+            if [ ! -z "$password" ]; then
+                extract_archive "$item" "$password"
+            fi
+        done
+    done
+
+}
+
+extract_archive () {
+    local item="$1"
+    local password="$2"
+    printf "\nAttempting to extract file:\n%s\n\nUsing password:\n%s\n\n" "$item" "$password"
+    7z x "$item" -p${password} -y
+}
+
+find_flac () {
+    local input_dir="$1"
+    printf "\n%s\nSearching for FLAC files in directory:\n%s\n\n" "$divder" "$input_dir"
+    find "$input_dir" -name "*.flac" -print0 | while read -d $'\0' item; do
+        (
+        output="${item%%.flac}.mp3"
+        printf "\n%s\n" "$divder"
+        printf "\nINPUT FLAC:\n%s\n\n" "$item"
+        printf "\nOUTPUT MP3:\n%s\n\n" "$output"
+        ffmpeg -y -i "$item" -aq 0 "$output" < /dev/null
+        )
+    done
+}
 # ~~~~~ CHECK SCRIPT ARGS ~~~~~ #
 if (($# != 1)); then
   grep '^##' $0
@@ -19,29 +60,8 @@ fi
 # ~~~~~ GET SCRIPT ARGS ~~~~~ #
 input_dir="$1"
 
-# file with passwords to try, one per line
-password_file="passwords.txt"
-divder="---------------------------------"
-
 # ~~~~~ EXTRACT ARCHIVES ~~~~~ #
-printf "\n%s\nSearching for archive files in directory:\n%s\n\n" "$divder" "$input_dir"
-find "$input_dir" \( -name '*.zip' -o -name '*.rar' -o -name '*.7z' \) | while read item; do
-    cat "$password_file" | while read password; do
-        if [ ! -z "$password" ]; then
-            printf "\nAttempting to extract file:\n%s\n\nUsing password:\n%s\n\n" "$item" "$password"
-            7z x "$item" -p${password} -y
-        fi
-    done
-done
+find_archives "$input_dir" "$password_file"
 
 # ~~~~~ CONVERT FLAC ~~~~~ #
-printf "\n%s\nSearching for FLAC files in directory:\n%s\n\n" "$divder" "$input_dir"
-find "$input_dir" -name "*.flac" -print0 | while read -d $'\0' item; do
-    (
-    output="${item%%.flac}.mp3"
-    printf "\n%s\n" "$divder"
-    printf "\nINPUT FLAC:\n%s\n\n" "$item"
-    printf "\nOUTPUT MP3:\n%s\n\n" "$output"
-    ffmpeg -y -i "$item" -aq 0 "$output" < /dev/null
-    )
-done
+find_flac "$input_dir"
