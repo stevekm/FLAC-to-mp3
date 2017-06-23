@@ -34,8 +34,9 @@ find_archives () {
 extract_archive () {
     local item="$1"
     local password="$2"
+    local outdir="$(dirname "${item}")"
     printf "\nAttempting to extract file:\n%s\n\nUsing password:\n%s\n\n" "$item" "$password"
-    7z x "$item" -p${password} -y
+    7z x "$item" -p${password} -y -o"${outdir}"
 }
 
 find_flac () {
