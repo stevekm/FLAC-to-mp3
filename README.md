@@ -31,6 +31,8 @@ Run the script on a directory that contains password-protected archive files (.7
 ./extract_flac2mp3.sh "path/to/my_music_folder"
 ```
 
+- NOTE: The path to the directory to process should not be a subdirectory of this repo.
+
 # Software
 - 7-Zip [64] 16.02
 - ffmpeg version 3.3
