@@ -35,7 +35,7 @@ extract_archive () {
     local item="$1"
     local password="$2"
     local outdir="$(dirname "${item}")"
-    printf "\nAttempting to extract file:\n%s\n\nUsing password:\n%s\n\n" "$item" "$password"
+    printf "\nAttempting to extract file:\n%s\n\nUsing password:\n%s\n\nTo location:\n%s\n\n" "$item" "$password" "$outdir"
     7z x "$item" -p${password} -y -o"${outdir}"
 }
 
