@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 ## USAGE: extract_flac2mp3.sh "path/to/dir"
 ## EXAMPLE: extract_flac2mp3.sh "FLAC_dir/Rush"
@@ -21,7 +22,7 @@ find_archives () {
     local input_dir="$1"
     local password_file="$2"
     printf "\n%s\nSearching for archive files in directory:\n%s\n\n" "$divder" "$input_dir"
-    find "$input_dir" \( -name '*.zip' -o -name '*.rar' -o -name '*.7z' \) | while read item; do
+    find "${input_dir}/" \( -name '*.zip' -o -name '*.rar' -o -name '*.7z' \) -print0 | while read -d $'\0' read item; do
         cat "$password_file" | while read password; do
             if [ ! -z "$password" ]; then
                 extract_archive "$item" "$password"
@@ -42,7 +43,7 @@ extract_archive () {
 find_flac () {
     local input_dir="$1"
     printf "\n%s\nSearching for FLAC files in directory:\n%s\n\n" "$divder" "$input_dir"
-    find "$input_dir" -name "*.flac" -print0 | while read -d $'\0' item; do
+    find "${input_dir}/" -name "*.flac" -print0 | while read -d $'\0' item; do
         (
         output="${item%%.flac}.mp3"
         printf "\n%s\n" "$divder"
